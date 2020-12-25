@@ -1,3 +1,3 @@
 # Epic
 
-A description of this package.
+Epic is the new player of the Podest podcast app.

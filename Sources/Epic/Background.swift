@@ -12,23 +12,25 @@ import UIKit
 struct Background: View {
   
   @Environment(\.colorScheme) var colorScheme: ColorScheme
-  @Binding var image: UIImage
+  let image: UIImage
   
   private let delta: CGFloat = 0.3
   
+  var color: UIColor {
+    colorScheme == .dark ?
+      image.averageColor.darker(delta) :
+      image.averageColor.lighter(delta)
+  }
+  
   var body: some View {
-    Color(
-      colorScheme == .dark ?
-        image.averageColor.darker(delta) :
-        image.averageColor.lighter(delta)
-    )
+    Color(color)
     .edgesIgnoringSafeArea(.all)
     .animation(.default)
   }
 }
 
 /// Robert Pieta, https://www.robertpieta.com/lighter-and-darker-uicolor-swift/
-private extension UIColor {
+extension UIColor {
   
   private func makeColor(delta: CGFloat) -> UIColor {
     var red: CGFloat = 0
@@ -59,7 +61,7 @@ private extension UIColor {
   }
 }
 
-private extension UIImage {
+extension UIImage {
   
   private func makeCIAreaAverageFilter(image: CIImage) -> CIFilter? {
     let extentVector = CIVector(

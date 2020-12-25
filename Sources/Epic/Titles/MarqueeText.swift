@@ -11,7 +11,7 @@ import SwiftUI
 /// A view that displays a single line text pendulum.
 struct MarqueeText : View {
   
-  @Binding var string: String
+  let string: String
   @Binding var width: CGFloat
   
   @State var offset: CGFloat = .zero
@@ -59,6 +59,12 @@ struct MarqueeText : View {
     update()
   }
   
+  init(string: String, width: Binding<CGFloat>) {
+    self.string = string
+    self._width = width
+    start()
+  }
+  
   var body: some View {
     ZStack {
       Text(string)
@@ -72,11 +78,7 @@ struct MarqueeText : View {
           flipDirection()
           update()
         }
-    }.onChange(of: string) { _ in
-      start()
     }.onChange(of: width) { _ in
-      start()
-    }.onAppear {
       start()
     }
   }

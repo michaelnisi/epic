@@ -15,12 +15,8 @@ struct ControlsView: View {
   let forward: () -> Void
   let backward: () -> Void
   
-  @Binding var isPlaying: Bool
+  let isPlaying: Bool
   
-  private func isPlayingChange(value: Bool) {
-    value ? play() : pause()
-  }
-
   var body: some View {
       HStack(spacing: 32) {
         PlayerButton(action: forward, style: .gobackward15)
@@ -28,7 +24,9 @@ struct ControlsView: View {
           .foregroundColor(Color(.secondaryLabel))
         PlayerButton(action: backward, style: .backward)
           .frame(width: 48, height: 48)
-        PlayButton(isPlaying: $isPlaying)
+        PlayButton(isPlaying: isPlaying, action: {
+          isPlaying ? pause() : play()
+        })
           .frame(width: 48, height: 48)
         PlayerButton(action: forward, style: .forward)
           .frame(width: 48, height: 64)
@@ -36,6 +34,5 @@ struct ControlsView: View {
           .frame(width: 24, height: 24 )
           .foregroundColor(Color(.secondaryLabel))
       }
-      .onChange(of: isPlaying, perform: isPlayingChange)
   }
 }

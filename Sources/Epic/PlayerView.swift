@@ -7,65 +7,70 @@
 //
 
 import SwiftUI
+import Clay
 
-class NowPlaying: ObservableObject {
-  
-  @Published var title: String
-  @Published var subtitle: String
-  @Published var image: UIImage
-  
-  init(title: String, subtitle: String, image: UIImage) {
-    self.title = title
-    self.subtitle = subtitle
-    self.image = image
-  }
+public protocol PlayerHosting {
+  func play()
+  func forward()
+  func backgward()
+  func close()
+  func pause()
 }
 
-class PlaybackInfo: ObservableObject {
+@dynamicMemberLookup
+public struct PlayerView: View {
   
-  @Published var isPlaying: Bool
-  
-  init(isPlaying: Bool) {
-    self.isPlaying = isPlaying
+  public struct Model {
+    public let title: String
+    public let subtitle: String
+    public let image: UIImage
+    public let isPlaying: Bool
+    public let isTransitionAnimating: Bool
+    
+    public init(
+      title: String,
+      subtitle: String,
+      image: UIImage,
+      isPlaying: Bool,
+      isTransitionAnimating: Bool
+    ) {
+      self.title = title
+      self.subtitle = subtitle
+      self.image = image
+      self.isPlaying = isPlaying
+      self.isTransitionAnimating = isTransitionAnimating
+    }
+    
+    var isEmpty: Bool {
+      title == "" && subtitle == ""
+    }
+    
+    var color: UIColor {
+      image.averageColor
+    }
   }
-}
-
-struct PlayerView: View {
+  
+  private let model: Model
+  private let delegate: PlayerHosting?
+  
+  public init(model: Model, delegate: PlayerHosting? = nil) {
+    self.model = model
+    self.delegate = delegate
+  }
+  
+  public subscript<T>(dynamicMember keyPath: KeyPath<Model, T>) -> T {
+    model[keyPath: keyPath]
+  }
   
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
-  
-  @ObservedObject var model = NowPlaying(
-    title: "",
-    subtitle: "",
-    image: UIImage(named: "Oval")!
-  )
-  
-  @ObservedObject var info = PlaybackInfo(isPlaying: false)
-  
-  @State var padding: CGFloat = 16
-  @State var shadow: CGFloat = 16
-  @State var cornerRadius: CGFloat = 8
-  @State var trackTime: CGFloat = 0.5
-  @State var imageAnimation: Animation?
+  @State var trackTime: Double = 0.5
   @State var imageWidth: CGFloat = 0
+  @State var orientation = UIDevice.current.orientation
   
   private var paddingMultiplier: CGFloat {
     horizontalSizeClass == .compact ? 2 / 3 : 1
   }
-  
-  private var playHandler: (() -> Void)?
-  private var forwardHandler: (() -> Void)?
-  private var backwardHandler: (() -> Void)?
-  private var closeHandler: (() -> Void)?
-  private var pauseHandler: (() -> Void)?
-  
-  private var closeTap: some Gesture {
-    TapGesture()
-      .onEnded { _ in
-        close()
-      }
-  }
-    
+
   private var outerPadding: EdgeInsets {
     EdgeInsets(top: 12, leading: 0, bottom: 0, trailing: 0)
   }
@@ -74,15 +79,81 @@ struct PlayerView: View {
     EdgeInsets(top: 0, leading: 12, bottom: 12, trailing: 12)
   }
   
-  private var image: some View {
+  public var body: some View {
+    ZStack {
+      if !model.isEmpty {
+        actualBody
+      }
+    }
+  }
+}
+
+// MARK: - Structure
+
+extension PlayerView {
+  
+  private var closeTap: some Gesture {
+    TapGesture()
+      .onEnded { _ in
+        close()
+      }
+  }
+  
+  private var actualBody: some View {
+    Group {
+      Background(image: model.image)
+      VStack {
+        CloseBarButton()
+          .gesture(closeTap)
+        VStack(spacing: 24) {
+          hero
+          titles
+          track
+          controls
+          actions
+        }
+        .padding(innerPadding)
+        .foregroundColor(Color(.label))
+        .frame(maxWidth: 600)
+      }.padding(outerPadding)
+    }
+  }
+}
+
+// MARK: - Hero Image
+
+extension PlayerView {
+  
+  private var imageAnimation: Animation? {
+    guard !model.isTransitionAnimating else {
+      return nil
+    }
+    
+    return model.isPlaying ? spring : .default
+  }
+  
+  private var spring: Animation {
+    .interpolatingSpring(mass: 1, stiffness: 250, damping: 15, initialVelocity: -5)
+  }
+  
+  private var imageShadowRadius: CGFloat {
+    (model.isPlaying ? 32 : 16) * paddingMultiplier
+  }
+  
+  private var imagePadding: CGFloat {
+    (model.isPlaying ? 8 : 32) * paddingMultiplier
+  }
+  
+  private var hero: some View {
     Image(uiImage: model.image)
       .resizable()
-      .cornerRadius(cornerRadius)
+      .cornerRadius(3)
       .aspectRatio(contentMode: .fit)
-      .padding(padding)
-      .shadow(radius: shadow)
+      .padding(imagePadding)
+      .shadow(radius: imageShadowRadius)
       .frame(maxHeight: .infinity)
       .foregroundColor(Color(.quaternaryLabel))
+      .animation(imageAnimation)
       .background(GeometryReader { geometry in
         Color.clear.preference(key: SizePrefKey.self, value: geometry.size)
       })
@@ -90,22 +161,78 @@ struct PlayerView: View {
         imageWidth = size.width
       }
   }
-  
+}
+
+// MARK: - Titles
+
+extension PlayerView {
+
   private var titles: some View {
     VStack(spacing: 6) {
-      MarqueeText(string: $model.title, width: $imageWidth)
+      MarqueeText(string: model.title, width: $imageWidth)
       Text(model.subtitle)
         .font(.subheadline)
         .lineLimit(1)
     }
   }
+}
+
+// MARK: - Track
+
+extension PlayerView {
   
   private var track: some View {
-    HStack(spacing: 16) {
-      Text("00:00").font(.caption)
-      Slider(value: $trackTime)
-      Text("67:10").font(.caption)
-    }
+    Clay.Slider(
+      value: $trackTime,
+      range: (0, 100),
+      color: model.color,
+      knobWidth: 0
+    ) { modifiers, value, color in
+        ZStack {
+          ZStack {
+            Color(color)
+              .modifier(modifiers.barLeft)
+            Color.gray
+              .modifier(modifiers.barRight)
+            HStack {
+              Text(("\(value)"))
+                .font(.body)
+                .padding(.leading)
+              Spacer()
+              Text(("100"))
+                .font(.body)
+                .padding(.trailing)
+            }.foregroundColor(.white)
+          }.cornerRadius(.zero)
+        }.cornerRadius(15)
+      }.frame(height: 30)
+  }
+}
+
+// MARK: - Controls and Actions
+
+extension PlayerView {
+  
+  private func nop() {}
+  
+  private func forward() {
+    delegate?.forward()
+  }
+  
+  private func backward() {
+    delegate?.backgward()
+  }
+  
+  private func play() {
+    delegate?.play()
+  }
+  
+  private func close() {
+    delegate?.close()
+  }
+  
+  private func pause() {
+    delegate?.pause()
   }
   
   private var controls: some View {
@@ -114,7 +241,7 @@ struct PlayerView: View {
       pause: pause,
       forward: forward,
       backward: backward,
-      isPlaying: $info.isPlaying
+      isPlaying: model.isPlaying
     )
   }
   
@@ -129,94 +256,4 @@ struct PlayerView: View {
     }
     .foregroundColor(Color(.secondaryLabel))
   }
-  
-  var body: some View {
-    HStack {
-      ZStack {
-        Background(image: $model.image)
-        VStack {
-          CloseBarButton()
-            .gesture(closeTap)
-          
-          VStack(spacing: 24) {
-            image
-            titles
-            track
-            controls
-            actions
-          }
-          .padding(innerPadding)
-          .foregroundColor(Color(.label))
-          .frame(maxWidth: 600)
-          .onAppear {
-            imageAnimation = nil
-          }
-          .onReceive(info.$isPlaying) { isPlaying in
-            DispatchQueue.main.async {
-              withAnimation(imageAnimation) {
-                updateState(isPlaying)
-              }
-            }
-          }
-        }.padding(outerPadding)
-      }
-    }
-  }
-  
-  private var spring: Animation {
-    .interpolatingSpring(mass: 1, stiffness: 250, damping: 15, initialVelocity: -5)
-  }
-  
-  private func makeImageAnimation(isPlaying: Bool) -> Animation {
-    isPlaying ? .default : spring
-  }
-  
-  private func updateState(_ isPlaying: Bool) {
-    padding = (isPlaying ? 16 : 64) * paddingMultiplier
-    shadow = (isPlaying ? 16 : 8) * paddingMultiplier
-    cornerRadius = isPlaying ? 16 : 8
-    imageAnimation = makeImageAnimation(isPlaying: isPlaying)
-  }
 }
-
-// MARK: - Actions
-
-extension PlayerView {
-  
-  private func nop() {}
-  
-  private func forward() {
-    forwardHandler?()
-  }
-  
-  private func backward() {
-    backwardHandler?()
-  }
-  
-  private func play() {
-    playHandler?()
-  }
-  
-  private func close() {
-    closeHandler?()
-  }
-  
-  private func pause() {
-    pauseHandler?()
-  }
-  
-  mutating func install(
-    playHandler: (() -> Void)? = nil,
-    forwardHandler: (() -> Void)? = nil,
-    backwardHandler: (() -> Void)? = nil,
-    closeHandler: (() -> Void)? = nil,
-    pauseHandler: (() -> Void)? = nil
-  ) {
-    self.playHandler = playHandler
-    self.forwardHandler = forwardHandler
-    self.backwardHandler = backwardHandler
-    self.closeHandler = closeHandler
-    self.pauseHandler = pauseHandler
-  }
-}
-
