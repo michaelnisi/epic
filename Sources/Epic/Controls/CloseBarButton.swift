@@ -7,11 +7,25 @@
 //
 
 import SwiftUI
+//
+//#if os(macOS)
+//extension Color {
+//  var secondary: Color {
+//    Color(.secondaryLabelColor)
+//  }
+//}
+//#else
+//extension Color {
+//  var secondary: Color {
+//    Color(.secondaryLabel)
+//  }
+//}
+//#endif
 
 struct CloseBarButton: View {
   var body: some View {
     Rectangle()
-      .fill(Color(.secondaryLabel))
+      .fill(Color.secondary)
       .frame(width: 96, height: 6)
       .cornerRadius(3)
   }

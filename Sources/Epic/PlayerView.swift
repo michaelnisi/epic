@@ -17,53 +17,56 @@ public protocol PlayerHosting {
   func pause()
 }
 
-@dynamicMemberLookup
 public struct PlayerView: View {
   
-  public struct Model {
-    public let title: String
-    public let subtitle: String
-    public let image: UIImage
-    public let isPlaying: Bool
-    public let isTransitionAnimating: Bool
-    
-    public init(
-      title: String,
-      subtitle: String,
-      image: UIImage,
-      isPlaying: Bool,
-      isTransitionAnimating: Bool
-    ) {
-      self.title = title
-      self.subtitle = subtitle
-      self.image = image
-      self.isPlaying = isPlaying
-      self.isTransitionAnimating = isTransitionAnimating
+  public struct Colors {
+    public init(base: Color, dark: Color, light: Color) {
+      self.base = base
+      self.dark = dark
+      self.light = light
     }
     
-    var isEmpty: Bool {
-      title == "" && subtitle == ""
-    }
-    
-    var color: UIColor {
-      image.averageColor
-    }
+    public let base: Color
+    public let dark: Color
+    public let light: Color
   }
   
-  private let model: Model
-  private let delegate: PlayerHosting?
+  public let item: PlayerItem
+  public let isTransitionAnimating: Bool
+  public let colors: Colors
+  public let image: Image
+  public let airPlayButton: AnyView
+  public let delegate: PlayerHosting?
   
-  public init(model: Model, delegate: PlayerHosting? = nil) {
-    self.model = model
+  public init(
+    item: PlayerItem,
+    isTransitionAnimating: Bool,
+    colors: Colors,
+    image: Image,
+    airPlayButton: AnyView,
+    delegate: PlayerHosting? = nil
+  ) {
+    self.item = item
+    self.isTransitionAnimating = isTransitionAnimating
+    self.colors = colors
+    self.image = image
+    self.airPlayButton = airPlayButton
     self.delegate = delegate
   }
   
-  public subscript<T>(dynamicMember keyPath: KeyPath<Model, T>) -> T {
-    model[keyPath: keyPath]
+  public func copy(isPlaying: Bool? = nil, isTransitionAnimating: Bool? = nil) -> PlayerView {
+    PlayerView(
+      item: item.copy(isPlaying: isPlaying),
+      isTransitionAnimating: isTransitionAnimating ?? self.isTransitionAnimating,
+      colors: colors,
+      image: image,
+      airPlayButton: airPlayButton,
+      delegate: delegate
+    )
   }
   
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
-  @State var trackTime: Double = 0.5
+  @State var trackTime: Double = 20
   @State var imageWidth: CGFloat = 0
   @State var orientation = UIDevice.current.orientation
   
@@ -81,7 +84,7 @@ public struct PlayerView: View {
   
   public var body: some View {
     ZStack {
-      if !model.isEmpty {
+      if !item.isEmpty {
         actualBody
       }
     }
@@ -101,7 +104,7 @@ extension PlayerView {
   
   private var actualBody: some View {
     Group {
-      Background(image: model.image)
+      background
       VStack {
         CloseBarButton()
           .gesture(closeTap)
@@ -113,10 +116,19 @@ extension PlayerView {
           actions
         }
         .padding(innerPadding)
-        .foregroundColor(Color(.label))
+        .foregroundColor(Color.primary)
         .frame(maxWidth: 600)
       }.padding(outerPadding)
     }
+  }
+}
+
+// MARK: - Background
+
+extension PlayerView {
+
+  var background: some View {
+    Background(dark: colors.dark, light: colors.light)
   }
 }
 
@@ -125,11 +137,11 @@ extension PlayerView {
 extension PlayerView {
   
   private var imageAnimation: Animation? {
-    guard !model.isTransitionAnimating else {
+    guard !isTransitionAnimating else {
       return nil
     }
     
-    return model.isPlaying ? spring : .default
+    return item.isPlaying ? spring : .default
   }
   
   private var spring: Animation {
@@ -137,22 +149,22 @@ extension PlayerView {
   }
   
   private var imageShadowRadius: CGFloat {
-    (model.isPlaying ? 32 : 16) * paddingMultiplier
+    (item.isPlaying ? 32 : 16) * paddingMultiplier
   }
   
   private var imagePadding: CGFloat {
-    (model.isPlaying ? 8 : 32) * paddingMultiplier
+    (item.isPlaying ? 8 : 32) * paddingMultiplier
   }
   
   private var hero: some View {
-    Image(uiImage: model.image)
+    image
       .resizable()
       .cornerRadius(3)
       .aspectRatio(contentMode: .fit)
       .padding(imagePadding)
       .shadow(radius: imageShadowRadius)
       .frame(maxHeight: .infinity)
-      .foregroundColor(Color(.quaternaryLabel))
+      .foregroundColor(Color.secondary)
       .animation(imageAnimation)
       .background(GeometryReader { geometry in
         Color.clear.preference(key: SizePrefKey.self, value: geometry.size)
@@ -169,8 +181,8 @@ extension PlayerView {
 
   private var titles: some View {
     VStack(spacing: 6) {
-      MarqueeText(string: model.title, width: $imageWidth)
-      Text(model.subtitle)
+      MarqueeText(string: item.title, width: $imageWidth)
+      Text(item.subtitle)
         .font(.subheadline)
         .lineLimit(1)
     }
@@ -185,12 +197,12 @@ extension PlayerView {
     Clay.Slider(
       value: $trackTime,
       range: (0, 100),
-      color: model.color,
+      color: colors.base,
       knobWidth: 0
     ) { modifiers, value, color in
         ZStack {
           ZStack {
-            Color(color)
+            colors.base
               .modifier(modifiers.barLeft)
             Color.gray
               .modifier(modifiers.barRight)
@@ -241,7 +253,7 @@ extension PlayerView {
       pause: pause,
       forward: forward,
       backward: backward,
-      isPlaying: model.isPlaying
+      isPlaying: item.isPlaying
     )
   }
   
@@ -249,11 +261,38 @@ extension PlayerView {
     HStack(spacing: 48) {
       PlayerButton(action: nop, style: .moon)
         .frame(width: 20, height: 20 )
-      AirPlayButton()
+      airPlayButton
         .frame(width: 48, height: 48)
       PlayerButton(action: nop, style: .speaker)
         .frame(width: 20, height: 20 )
     }
-    .foregroundColor(Color(.secondaryLabel))
+    .foregroundColor(Color.secondary)
+  }
+}
+
+// MARK: - Preview
+
+struct PlayerView_Previews: PreviewProvider {
+  
+  static var previews: some View {
+    PlayerView(
+      item: item,
+      isTransitionAnimating: false,
+      colors: colors,
+      image: Image("Oval"),
+      airPlayButton: AnyView(Button("hello", action: {}))
+    )
+  }
+  
+  static var colors: PlayerView.Colors {
+    PlayerView.Colors(base: .red, dark: .green, light: .blue)
+  }
+  
+  private static var item: PlayerItem {
+    PlayerItem(
+      title: "Hello",
+      subtitle: "Wow",
+      isPlaying: false
+    )
   }
 }

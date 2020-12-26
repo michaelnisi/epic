@@ -21,7 +21,7 @@ struct ControlsView: View {
       HStack(spacing: 32) {
         PlayerButton(action: forward, style: .gobackward15)
           .frame(width: 24, height: 24 )
-          .foregroundColor(Color(.secondaryLabel))
+          .foregroundColor(Color.secondary)
         PlayerButton(action: backward, style: .backward)
           .frame(width: 48, height: 48)
         PlayButton(isPlaying: isPlaying, action: {
@@ -32,7 +32,7 @@ struct ControlsView: View {
           .frame(width: 48, height: 64)
         PlayerButton(action: forward, style: .goforward15)
           .frame(width: 24, height: 24 )
-          .foregroundColor(Color(.secondaryLabel))
+          .foregroundColor(Color.secondary)
       }
   }
 }

@@ -6,7 +6,6 @@
 //  Copyright © 2020 Michael Nisi. All rights reserved.
 //
 
-import Foundation
 import SwiftUI
 
 /// Antoine van der Lee, https://www.avanderlee.com/swiftui/withanimation-completion-callback/
