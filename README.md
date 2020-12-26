@@ -1,3 +1,3 @@
 # Epic
 
-Epic is the new player of the Podest podcast app.
+Epic is a new audio player user interface for [Podest](https://github.com/michaelnisi/podest) using SwiftUI.
