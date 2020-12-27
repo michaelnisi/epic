@@ -59,9 +59,18 @@ public struct PlayerView: View {
     item[keyPath: keyPath]
   }
   
-  public func copy(isPlaying: Bool? = nil, isTransitionAnimating: Bool? = nil) -> PlayerView {
+  public func copy(
+    isPlaying: Bool? = nil,
+    isBackwardable: Bool? = nil,
+    isForwardable: Bool? = nil,
+    isTransitionAnimating: Bool? = nil
+  ) -> PlayerView {
     PlayerView(
-      item: item.copy(isPlaying: isPlaying),
+      item: item.copy(
+        isPlaying: isPlaying,
+        isBackwardable: isBackwardable,
+        isForwardable: isForwardable
+      ),
       isTransitionAnimating: isTransitionAnimating ?? self.isTransitionAnimating,
       colors: colors,
       image: image,
@@ -76,7 +85,7 @@ public struct PlayerView: View {
   @State var orientation = UIDevice.current.orientation
   
   private var paddingMultiplier: CGFloat {
-    horizontalSizeClass == .compact ? 2 / 3 : 1
+    horizontalSizeClass == .compact ? 1 : 1.5
   }
 
   private var outerPadding: EdgeInsets {
@@ -158,7 +167,7 @@ extension PlayerView {
   }
   
   private var imagePadding: CGFloat {
-    (item.isPlaying ? 8 : 32) * paddingMultiplier
+    (item.isPlaying ? 8 : 40) * paddingMultiplier
   }
   
   private var hero: some View {
@@ -258,7 +267,9 @@ extension PlayerView {
       pause: pause,
       forward: forward,
       backward: backward,
-      isPlaying: item.isPlaying
+      isPlaying: item.isPlaying,
+      isBackwardable: item.isBackwardable,
+      isForwardable: item.isForwardable
     )
   }
   
@@ -297,7 +308,9 @@ struct PlayerView_Previews: PreviewProvider {
     PlayerItem(
       title: "Hello",
       subtitle: "Wow",
-      isPlaying: false
+      isPlaying: false,
+      isBackwardable: true,
+      isForwardable: true
     )
   }
 }

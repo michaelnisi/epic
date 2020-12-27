@@ -16,6 +16,20 @@ struct ControlsView: View {
   let backward: () -> Void
   
   let isPlaying: Bool
+  let isBackwardable: Bool
+  let isForwardable: Bool
+  
+  private func pauseOrPlay() {
+    isPlaying ? pause() : play()
+  }
+  
+  private var forwardColor: Color {
+    isForwardable ? .primary : .secondary
+  }
+  
+  private var backwardColor: Color {
+    isBackwardable ? .primary : .secondary
+  }
   
   var body: some View {
       HStack(spacing: 32) {
@@ -24,12 +38,14 @@ struct ControlsView: View {
           .foregroundColor(Color.secondary)
         PlayerButton(action: backward, style: .backward)
           .frame(width: 48, height: 48)
-        PlayButton(isPlaying: isPlaying, action: {
-          isPlaying ? pause() : play()
-        })
+          .disabled(!isBackwardable)
+          .foregroundColor(backwardColor)
+        PlayButton(isPlaying: isPlaying, action: pauseOrPlay)
           .frame(width: 48, height: 48)
         PlayerButton(action: forward, style: .forward)
           .frame(width: 48, height: 64)
+          .disabled(!isForwardable)
+          .foregroundColor(forwardColor)
         PlayerButton(action: forward, style: .goforward15)
           .frame(width: 24, height: 24 )
           .foregroundColor(Color.secondary)
