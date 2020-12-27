@@ -1,6 +1,6 @@
 //
 //  MarqueeText.swift
-//  Podest
+//  Epic
 //
 //  Created by Michael Nisi on 04.12.20.
 //  Copyright © 2020 Michael Nisi. All rights reserved.

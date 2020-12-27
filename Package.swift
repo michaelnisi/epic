@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
   name: "Epic",
   platforms: [
-    .iOS(.v14), .macOS(.v10_15)
+    .iOS(.v14)
   ],
   products: [
     .library(
@@ -13,7 +13,7 @@ let package = Package(
       targets: ["Epic"]),
   ],
   dependencies: [
-    .package(name: "Clay", path: "/Users/michael/swift/clay")
+    .package(name: "Clay", url: "https://github.com/michaelnisi/clay", from: "1.0.0")
   ],
   targets: [
     .target(

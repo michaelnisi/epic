@@ -1,26 +1,12 @@
 //
 //  CloseBarButton.swift
-//  Podest
+//  Epic
 //
 //  Created by Michael Nisi on 05.09.20.
 //  Copyright © 2020 Michael Nisi. All rights reserved.
 //
 
 import SwiftUI
-//
-//#if os(macOS)
-//extension Color {
-//  var secondary: Color {
-//    Color(.secondaryLabelColor)
-//  }
-//}
-//#else
-//extension Color {
-//  var secondary: Color {
-//    Color(.secondaryLabel)
-//  }
-//}
-//#endif
 
 struct CloseBarButton: View {
   var body: some View {

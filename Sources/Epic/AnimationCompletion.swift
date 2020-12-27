@@ -1,6 +1,6 @@
 //
 //  AnimationCompletion.swift
-//  Podest
+//  Epic
 //
 //  Created by Michael Nisi on 17.12.20.
 //  Copyright © 2020 Michael Nisi. All rights reserved.

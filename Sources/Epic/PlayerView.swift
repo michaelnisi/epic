@@ -1,6 +1,6 @@
 //
 //  PlayerView.swift
-//  Podest
+//  Epic
 //
 //  Created by Michael Nisi on 05.09.20.
 //  Copyright © 2020 Michael Nisi. All rights reserved.
@@ -17,6 +17,7 @@ public protocol PlayerHosting {
   func pause()
 }
 
+@dynamicMemberLookup
 public struct PlayerView: View {
   
   public struct Colors {
@@ -52,6 +53,10 @@ public struct PlayerView: View {
     self.image = image
     self.airPlayButton = airPlayButton
     self.delegate = delegate
+  }
+  
+  public subscript<T>(dynamicMember keyPath: KeyPath<PlayerItem, T>) -> T {
+    item[keyPath: keyPath]
   }
   
   public func copy(isPlaying: Bool? = nil, isTransitionAnimating: Bool? = nil) -> PlayerView {
