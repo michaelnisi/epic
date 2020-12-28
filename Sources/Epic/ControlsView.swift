@@ -19,16 +19,18 @@ struct ControlsView: View {
   let isBackwardable: Bool
   let isForwardable: Bool
   
+  @Environment(\.colors) var colors: Colors
+  
   private func pauseOrPlay() {
     isPlaying ? pause() : play()
   }
   
   private var forwardColor: Color {
-    isForwardable ? .primary : .secondary
+    isForwardable ? .primary : colors.base
   }
   
   private var backwardColor: Color {
-    isBackwardable ? .primary : .secondary
+    isBackwardable ? .primary : colors.base
   }
   
   var body: some View {

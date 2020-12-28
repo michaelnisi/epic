@@ -284,6 +284,7 @@ extension PlayerView {
       isForwardable: item.isForwardable
     )
     .foregroundColor(secondaryColor)
+    .environment(\.colors, colors)
   }
   
   private var actions: some View {
