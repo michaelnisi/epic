@@ -12,7 +12,7 @@ import Clay
 public protocol PlayerHosting {
   func play()
   func forward()
-  func backgward()
+  func backward()
   func close()
   func pause()
 }
@@ -99,7 +99,7 @@ public struct PlayerView: View {
   public var body: some View {
     ZStack {
       if !item.isEmpty {
-        actualBody
+        root
       }
     }
   }
@@ -116,7 +116,7 @@ extension PlayerView {
       }
   }
   
-  private var actualBody: some View {
+  private var root: some View {
     Group {
       background
       VStack {
@@ -246,7 +246,7 @@ extension PlayerView {
   }
   
   private func backward() {
-    delegate?.backgward()
+    delegate?.backward()
   }
   
   private func play() {
