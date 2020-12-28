@@ -104,6 +104,8 @@ extension PlayerView {
   private var root: some View {
     Group {
       background
+        .edgesIgnoringSafeArea(.all)
+        .animation(.default)
       VStack {
         closeButton
         VStack(spacing: 24) {
@@ -124,9 +126,9 @@ extension PlayerView {
 // MARK: - Background
 
 extension PlayerView {
-
-  private var background: some View {
-    Background(dark: colors.dark, light: colors.light)
+  
+  var background: Color {
+    colorScheme == .dark ? colors.dark : colors.light
   }
 }
 
@@ -232,12 +234,12 @@ extension PlayerView {
               Text(("\(value)"))
                 .font(.body)
                 .padding(.leading)
-                .foregroundColor(barRight)
+                .foregroundColor(.white)
               Spacer()
               Text(("100"))
                 .font(.body)
                 .padding(.trailing)
-                .foregroundColor(barLeft)
+                .foregroundColor(background)
             }
           }.cornerRadius(.zero)
         }.cornerRadius(15)
