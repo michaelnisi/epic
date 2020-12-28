@@ -289,7 +289,8 @@ extension PlayerView {
       PlayerButton(action: nop, style: .moon)
         .frame(width: 20, height: 20)
       airPlayButton
-        .frame(width: 48, height: 48).environment(\.colors, colors)
+        .frame(width: 48, height: 48)
+        .environment(\.colors, colors)
       PlayerButton(action: nop, style: .speaker)
         .frame(width: 20, height: 20)
     }
