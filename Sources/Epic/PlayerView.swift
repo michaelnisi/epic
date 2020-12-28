@@ -20,18 +20,6 @@ public protocol PlayerHosting {
 @dynamicMemberLookup
 public struct PlayerView: View {
   
-  public struct Colors {
-    public init(base: Color, dark: Color, light: Color) {
-      self.base = base
-      self.dark = dark
-      self.light = light
-    }
-    
-    public let base: Color
-    public let dark: Color
-    public let light: Color
-  }
-  
   public let item: PlayerItem
   public let isTransitionAnimating: Bool
   public let colors: Colors
@@ -79,10 +67,14 @@ public struct PlayerView: View {
     )
   }
   
+  @Environment(\.colorScheme) var colorScheme: ColorScheme
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
   @State var trackTime: Double = 20
   @State var imageWidth: CGFloat = 0
-  @State var orientation = UIDevice.current.orientation
+  
+  var secondaryColor: Color {
+    colorScheme == .dark ? colors.light : colors.dark
+  }
   
   private var paddingMultiplier: CGFloat {
     horizontalSizeClass == .compact ? 1 : 1.5
@@ -109,19 +101,11 @@ public struct PlayerView: View {
 
 extension PlayerView {
   
-  private var closeTap: some Gesture {
-    TapGesture()
-      .onEnded { _ in
-        close()
-      }
-  }
-  
   private var root: some View {
     Group {
       background
       VStack {
-        CloseBarButton()
-          .gesture(closeTap)
+        closeButton
         VStack(spacing: 24) {
           hero
           titles
@@ -141,8 +125,26 @@ extension PlayerView {
 
 extension PlayerView {
 
-  var background: some View {
+  private var background: some View {
     Background(dark: colors.dark, light: colors.light)
+  }
+}
+
+// MARK: - Close Button
+
+extension PlayerView {
+  
+  private var closeTap: some Gesture {
+    TapGesture()
+      .onEnded { _ in
+        close()
+      }
+  }
+  
+  private var closeButton: some View {
+    CloseBarButton()
+      .gesture(closeTap)
+      .foregroundColor(secondaryColor)
   }
 }
 
@@ -163,7 +165,7 @@ extension PlayerView {
   }
   
   private var imageShadowRadius: CGFloat {
-    (item.isPlaying ? 32 : 16) * paddingMultiplier
+    (item.isPlaying ? 32 : 12) * paddingMultiplier
   }
   
   private var imagePadding: CGFloat {
@@ -173,12 +175,11 @@ extension PlayerView {
   private var hero: some View {
     image
       .resizable()
-      .cornerRadius(3)
+      .cornerRadius(15)
       .aspectRatio(contentMode: .fit)
       .padding(imagePadding)
       .shadow(radius: imageShadowRadius)
       .frame(maxHeight: .infinity)
-      .foregroundColor(Color.secondary)
       .animation(imageAnimation)
       .background(GeometryReader { geometry in
         Color.clear.preference(key: SizePrefKey.self, value: geometry.size)
@@ -207,28 +208,37 @@ extension PlayerView {
 
 extension PlayerView {
   
+  private var barLeft: Color {
+    colorScheme == .dark ? colors.base : colors.dark
+  }
+  
+  private var barRight: Color {
+    colorScheme == .dark ? colors.light : colors.base
+  }
+  
   private var track: some View {
     Clay.Slider(
       value: $trackTime,
       range: (0, 100),
-      color: colors.base,
       knobWidth: 0
-    ) { modifiers, value, color in
+    ) { modifiers, value in
         ZStack {
           ZStack {
-            colors.base
+            barLeft
               .modifier(modifiers.barLeft)
-            Color.gray
+            barRight
               .modifier(modifiers.barRight)
             HStack {
               Text(("\(value)"))
                 .font(.body)
                 .padding(.leading)
+                .foregroundColor(barRight)
               Spacer()
               Text(("100"))
                 .font(.body)
                 .padding(.trailing)
-            }.foregroundColor(.white)
+                .foregroundColor(barLeft)
+            }
           }.cornerRadius(.zero)
         }.cornerRadius(15)
       }.frame(height: 30)
@@ -271,18 +281,19 @@ extension PlayerView {
       isBackwardable: item.isBackwardable,
       isForwardable: item.isForwardable
     )
+    .foregroundColor(secondaryColor)
   }
   
   private var actions: some View {
     HStack(spacing: 48) {
       PlayerButton(action: nop, style: .moon)
-        .frame(width: 20, height: 20 )
+        .frame(width: 20, height: 20)
       airPlayButton
-        .frame(width: 48, height: 48)
+        .frame(width: 48, height: 48).environment(\.colors, colors)
       PlayerButton(action: nop, style: .speaker)
-        .frame(width: 20, height: 20 )
+        .frame(width: 20, height: 20)
     }
-    .foregroundColor(Color.secondary)
+    .foregroundColor(secondaryColor)
   }
 }
 
@@ -300,8 +311,8 @@ struct PlayerView_Previews: PreviewProvider {
     )
   }
   
-  static var colors: PlayerView.Colors {
-    PlayerView.Colors(base: .red, dark: .green, light: .blue)
+  static var colors: Colors {
+    Colors(base: .red, dark: .green, light: .blue)
   }
   
   private static var item: PlayerItem {
