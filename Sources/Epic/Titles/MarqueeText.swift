@@ -9,22 +9,31 @@
 import SwiftUI
 
 /// A view that displays a single line text pendulum.
-struct MarqueeText : View {
+struct MarqueeText: View {
   
-  let string: String
-  @Binding var width: CGFloat
+  class Model: ObservableObject {
+    @Published public var string: String
+    @Published public var width: CGFloat
+    
+    init(string: String, width: CGFloat) {
+      self.string = string
+      self.width = width
+    }
+  }
   
-  @State var offset: CGFloat = .zero
-  @State var multiplier: CGFloat = 1
+  @ObservedObject var model: Model
+  
+  @State private var offset: CGFloat = .zero
+  @State private var multiplier: CGFloat = 1
   
   private let space: CGFloat = 24
 
   private var stringWidth: CGFloat {
-    string.size(usingFont: .preferredFont(forTextStyle: .headline)).width + space
+    model.string.size(usingFont: .preferredFont(forTextStyle: .headline)).width + space
   }
   
   private var shouldAnimate: Bool {
-    stringWidth - space > width
+    stringWidth - space > model.width
   }
   
   private func updateOffset() {
@@ -33,7 +42,7 @@ struct MarqueeText : View {
       return
     }
     
-    offset = (stringWidth - width) / 2 * multiplier
+    offset = (stringWidth - model.width) / 2 * multiplier
   }
   
   private func flipDirection() {
@@ -45,7 +54,7 @@ struct MarqueeText : View {
   }
   
   private func update() {
-    guard width > 0 else {
+    guard model.width > 0 else {
       return
     }
     
@@ -59,26 +68,24 @@ struct MarqueeText : View {
     update()
   }
   
-  init(string: String, width: Binding<CGFloat>) {
-    self.string = string
-    self._width = width
-    start()
-  }
-  
-  var body: some View {
+  public var body: some View {
     ZStack {
-      Text(string)
+      Text(model.string)
         .lineLimit(1)
         .font(.headline)
         .fixedSize()
-        .frame(width: width)
+        .frame(width: model.width)
         .offset(x: offset)
         .clipped()
         .onAnimationComplete(for: offset) {
           flipDirection()
           update()
         }
-    }.onChange(of: width) { _ in
+    }
+    .onChange(of: model.string) { _ in
+      start()
+    }
+    .onChange(of: model.width) { _ in
       start()
     }
   }
