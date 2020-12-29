@@ -25,7 +25,6 @@ public struct PlayerView: View {
     @Published public var subtitle: String
     @Published public var colors: Colors
     @Published public var image: Image
-    @Published public var airPlayButton: AnyView
     @Published public var isPlaying: Bool
     @Published public var isForwardable: Bool
     @Published public var isBackwardable: Bool
@@ -35,7 +34,6 @@ public struct PlayerView: View {
       subtitle: String,
       colors: Colors,
       image: Image,
-      airPlayButton: AnyView,
       isPlaying: Bool,
       isForwardable: Bool,
       isBackwardable: Bool
@@ -44,7 +42,6 @@ public struct PlayerView: View {
       self.subtitle = subtitle
       self.colors = colors
       self.image = image
-      self.airPlayButton = airPlayButton
       self.isPlaying = isPlaying
       self.isForwardable = isForwardable
       self.isBackwardable = isBackwardable
@@ -52,7 +49,8 @@ public struct PlayerView: View {
   }
   
   @ObservedObject var model: Model
-  public let delegate: PlayerHosting?
+  private let airPlayButton: AnyView
+  private let delegate: PlayerHosting?
   
   @Environment(\.colorScheme) private var colorScheme: ColorScheme
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
@@ -61,8 +59,9 @@ public struct PlayerView: View {
   @State private var trackTime: Double = 20
   @State private var imagePadding: CGFloat = 40
   
-  public init(model: Model, delegate: PlayerHosting? = nil) {
+  public init(model: Model, airPlayButton: AnyView, delegate: PlayerHosting? = nil) {
     self.model = model
+    self.airPlayButton = airPlayButton
     self.delegate = delegate
   }
   
@@ -294,7 +293,7 @@ extension PlayerView {
     HStack(spacing: 48) {
       PlayerButton(action: nop, style: .moon)
         .frame(width: 20, height: 20)
-      model.airPlayButton
+      airPlayButton
         .frame(width: 48, height: 48)
         .environment(\.colors, model.colors)
       PlayerButton(action: nop, style: .speaker)
