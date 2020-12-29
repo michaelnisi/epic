@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-/// A view that displays a single line text pendulum.
+/// A view that displays a single line of text, animating it horizontally, like a pendulum, if provided with insufficient space.
 struct MarqueeText: View {
   
   class Model: ObservableObject {
