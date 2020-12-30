@@ -9,42 +9,29 @@
 import SwiftUI
 import Clay
 
-public protocol PlayerHosting {
-  func play()
-  func forward()
-  func backward()
-  func close()
-  func pause()
-}
-
-@dynamicMemberLookup
 public struct PlayerView: View {
   
+  @dynamicMemberLookup
   public class Model: ObservableObject {
-    @Published public var title: String
-    @Published public var subtitle: String
-    @Published public var colors: Colors
-    @Published public var image: Image
+    @Published public var item: PlayerItem
     @Published public var isPlaying: Bool
     @Published public var isForwardable: Bool
     @Published public var isBackwardable: Bool
     
     public init(
-      title: String,
-      subtitle: String,
-      colors: Colors,
-      image: Image,
+      item: PlayerItem,
       isPlaying: Bool,
       isForwardable: Bool,
       isBackwardable: Bool
     ) {
-      self.title = title
-      self.subtitle = subtitle
-      self.colors = colors
-      self.image = image
+      self.item = item
       self.isPlaying = isPlaying
       self.isForwardable = isForwardable
       self.isBackwardable = isBackwardable
+    }
+    
+    public subscript<T>(dynamicMember keyPath: KeyPath<PlayerItem, T>) -> T {
+      item[keyPath: keyPath]
     }
   }
   
@@ -63,10 +50,6 @@ public struct PlayerView: View {
     self.model = model
     self.airPlayButton = airPlayButton
     self.delegate = delegate
-  }
-  
-  public subscript<T>(dynamicMember keyPath: KeyPath<Model, T>) -> T {
-    model[keyPath: keyPath]
   }
   
   private var secondaryColor: Color {
