@@ -48,7 +48,7 @@ public struct PlayerView: View {
     }
   }
   
-  @ObservedObject var model: Model
+  @ObservedObject private var model: Model
   private let airPlayButton: AnyView
   private let delegate: PlayerHosting?
   
@@ -113,7 +113,8 @@ extension PlayerView {
         .padding(innerPadding)
         .foregroundColor(Color.primary)
         .frame(maxWidth: 600)
-      }.padding(outerPadding)
+      }
+      .padding(outerPadding)
     }
   }
 }
