@@ -61,7 +61,7 @@ public struct PlayerView: View {
   }
 
   private var outerPadding: EdgeInsets {
-    EdgeInsets(top: 12, leading: 0, bottom: 0, trailing: 0)
+    EdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0)
   }
   
   private var innerPadding: EdgeInsets {
@@ -88,7 +88,7 @@ extension PlayerView {
         closeButton
         VStack(spacing: 24) {
           hero
-          titles
+          titles 
           track
           controls
           actions
@@ -123,9 +123,11 @@ extension PlayerView {
   }
   
   private var closeButton: some View {
+    Group {
     CloseBarButton()
       .gesture(closeTap)
       .foregroundColor(secondaryColor)
+    }.frame(minHeight: 60)
   }
 }
 
