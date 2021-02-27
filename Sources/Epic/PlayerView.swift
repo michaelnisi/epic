@@ -44,7 +44,7 @@ public struct PlayerView: View {
   
   @StateObject private var title = MarqueeText.Model(string: "", width: .zero)
   @State private var trackTime: Double = 20
-  @State private var imagePadding: CGFloat = 40
+  @State private var imageConfiguration: (CGFloat, CGFloat) = (40, 12)
   
   public init(model: Model, airPlayButton: AnyView, delegate: PlayerHosting? = nil) {
     self.model = model
@@ -143,12 +143,11 @@ extension PlayerView {
     .interpolatingSpring(mass: 1, stiffness: 250, damping: 15, initialVelocity: -5)
   }
   
-  private var imageShadowRadius: CGFloat {
-    (model.isPlaying ? 32 : 12) * paddingMultiplier
-  }
-  
-  private func updateImagePadding(isPlaying: Bool) {
-    imagePadding = (isPlaying ? 8 : 40) * paddingMultiplier
+  private func adjustImage(matching isPlaying: Bool) {
+    imageConfiguration = (
+      (isPlaying ? 8 : 40) * paddingMultiplier,
+      (isPlaying ? 32 : 12) * paddingMultiplier
+    )
   }
   
   private var hero: some View {
@@ -156,8 +155,8 @@ extension PlayerView {
       .resizable()
       .cornerRadius(15)
       .aspectRatio(contentMode: .fit)
-      .padding(imagePadding)
-      .shadow(radius: imageShadowRadius)
+      .padding(imageConfiguration.0)
+      .shadow(radius: imageConfiguration.1)
       .frame(maxHeight: .infinity)
       .background(GeometryReader { geometry in
         Color.clear.preference(key: SizePrefKey.self, value: geometry.size)
@@ -168,11 +167,11 @@ extension PlayerView {
       }
       .onChange(of: model.isPlaying) { isPlaying in
         withAnimation(imageAnimation) {
-          updateImagePadding(isPlaying: isPlaying)
+          adjustImage(matching: isPlaying)
         }
       }
       .onAppear {
-        updateImagePadding(isPlaying: model.isPlaying)
+        adjustImage(matching: model.isPlaying)
       }
   }
 }
