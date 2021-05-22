@@ -10,46 +10,20 @@ import SwiftUI
 import Clay
 
 public struct PlayerView: View {
-  
-  @dynamicMemberLookup
-  public class Model: ObservableObject {
-    @Published public var item: PlayerItem
-    @Published public var isPlaying: Bool
-    @Published public var isForwardable: Bool
-    @Published public var isBackwardable: Bool
-    
-    public init(
-      item: PlayerItem,
-      isPlaying: Bool,
-      isForwardable: Bool,
-      isBackwardable: Bool
-    ) {
-      self.item = item
-      self.isPlaying = isPlaying
-      self.isForwardable = isForwardable
-      self.isBackwardable = isBackwardable
-    }
-    
-    public subscript<T>(dynamicMember keyPath: KeyPath<PlayerItem, T>) -> T {
-      item[keyPath: keyPath]
-    }
-  }
-  
-  @ObservedObject private var model: Model
+  @ObservedObject private var model: Player
   private let airPlayButton: AnyView
-  private let delegate: PlayerHosting?
+  
+  public var delegate: PlayerHosting?
   
   @Environment(\.colorScheme) private var colorScheme: ColorScheme
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
   
   @StateObject private var title = MarqueeText.Model(string: "", width: .zero)
-  @State private var trackTime: Double = 20
   @State private var imageConfiguration: (CGFloat, CGFloat) = (40, 12)
   
-  public init(model: Model, airPlayButton: AnyView, delegate: PlayerHosting? = nil) {
+  public init(model: Player, airPlayButton: AnyView) {
     self.model = model
     self.airPlayButton = airPlayButton
-    self.delegate = delegate
   }
   
   private var secondaryColor: Color {
@@ -61,7 +35,7 @@ public struct PlayerView: View {
   }
 
   private var outerPadding: EdgeInsets {
-    EdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0)
+    EdgeInsets(top: 0, leading: 0, bottom: 40, trailing: 0)
   }
   
   private var innerPadding: EdgeInsets {
@@ -78,7 +52,6 @@ public struct PlayerView: View {
 // MARK: - Structure
 
 extension PlayerView {
-  
   private var root: some View {
     Group {
       background
@@ -105,7 +78,6 @@ extension PlayerView {
 // MARK: - Background
 
 extension PlayerView {
-  
   var background: Color {
     colorScheme == .dark ? model.colors.dark : model.colors.light
   }
@@ -114,7 +86,6 @@ extension PlayerView {
 // MARK: - Close Button
 
 extension PlayerView {
-  
   private var closeTap: some Gesture {
     TapGesture()
       .onEnded { _ in
@@ -124,17 +95,17 @@ extension PlayerView {
   
   private var closeButton: some View {
     Group {
-    CloseBarButton()
-      .gesture(closeTap)
-      .foregroundColor(secondaryColor)
-    }.frame(minHeight: 60)
+      CloseBarButton()
+        .gesture(closeTap)
+        .foregroundColor(secondaryColor)
+    }
+    .frame(minHeight: 60)
   }
 }
 
 // MARK: - Hero Image
 
 extension PlayerView {
-  
   private var imageAnimation: Animation? {
     model.isPlaying ? spring : .default
   }
@@ -153,7 +124,7 @@ extension PlayerView {
   private var hero: some View {
     model.image
       .resizable()
-      .cornerRadius(15)
+      .cornerRadius(5)
       .aspectRatio(contentMode: .fit)
       .padding(imageConfiguration.0)
       .shadow(radius: imageConfiguration.1)
@@ -179,7 +150,6 @@ extension PlayerView {
 // MARK: - Titles
 
 extension PlayerView {
-
   private var titles: some View {
     VStack(spacing: 6) {
       MarqueeText(model: title)
@@ -196,7 +166,6 @@ extension PlayerView {
 // MARK: - Track
 
 extension PlayerView {
-  
   private var barLeft: Color {
     colorScheme == .dark ? model.colors.base : model.colors.dark
   }
@@ -207,7 +176,7 @@ extension PlayerView {
   
   private var track: some View {
     Clay.Slider(
-      value: $trackTime,
+      value: $model.trackTime,
       range: (0, 100),
       knobWidth: 0
     ) { modifiers, value in
@@ -228,16 +197,18 @@ extension PlayerView {
                 .padding(.trailing)
                 .foregroundColor(background)
             }
-          }.cornerRadius(.zero)
-        }.cornerRadius(15)
-      }.frame(height: 30)
+          }
+          .cornerRadius(.zero)
+        }
+        .cornerRadius(15)
+      }
+    .frame(height: 30)
   }
 }
 
 // MARK: - Controls and Actions
 
 extension PlayerView {
-  
   private func nop() {}
   
   private func forward() {
