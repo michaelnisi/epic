@@ -9,6 +9,10 @@
 
 import SwiftUI
 
+public enum PlaybackState {
+  case preparing, paused, playing
+}
+
 public protocol PlayerHosting {
   func play()
   func forward()

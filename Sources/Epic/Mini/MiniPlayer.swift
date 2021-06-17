@@ -12,8 +12,7 @@ import UIKit
 /// MiniPlayer models presentation of the mini player. After this iteration, move into the Epic (player) package.
 public class MiniPlayer {
   public enum Action {
-    case play
-    case pause
+    case play, pause
   }
   
   public struct Item {
@@ -30,15 +29,23 @@ public class MiniPlayer {
     //
   }
   
-  @Published public private (set) var isPlaying = false
+  @Published public private (set) var playback: PlaybackState = .preparing
   @Published public private (set) var item = Item(title: "", image: UIImage())
   
   public var actionHandler: ((Action) -> Void)?
 }
 
 public extension MiniPlayer {
-  func configure(item: Item, isPlaying: Bool) {
+  func configure(item: Item, playback: PlaybackState) {
     self.item = item
-    self.isPlaying = isPlaying
+    self.playback = playback
+  }
+  
+  func play() {
+    actionHandler?(.play)
+  }
+  
+  func pause() {
+    actionHandler?(.pause)
   }
 }
