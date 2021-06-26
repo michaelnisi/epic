@@ -10,10 +10,8 @@ import SwiftUI
 import Clay
 
 public struct PlayerView: View {
-  @ObservedObject private var model: Player
+  @ObservedObject public private (set) var model: Player
   private let airPlayButton: AnyView
-  
-  public var delegate: PlayerHosting?
   
   @Environment(\.colorScheme) private var colorScheme: ColorScheme
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
@@ -89,7 +87,7 @@ extension PlayerView {
   private var closeTap: some Gesture {
     TapGesture()
       .onEnded { _ in
-        close()
+        model.close()
       }
   }
   
@@ -211,32 +209,12 @@ extension PlayerView {
 extension PlayerView {
   private func nop() {}
   
-  private func forward() {
-    delegate?.forward()
-  }
-  
-  private func backward() {
-    delegate?.backward()
-  }
-  
-  private func play() {
-    delegate?.play()
-  }
-  
-  private func close() {
-    delegate?.close()
-  }
-  
-  private func pause() {
-    delegate?.pause()
-  }
-  
   private var controls: some View {
     ControlsView(
-      play: play,
-      pause: pause,
-      forward: forward,
-      backward: backward,
+      play: model.play,
+      pause: model.pause,
+      forward: model.forward,
+      backward: model.backward,
       isPlaying: model.isPlaying,
       isBackwardable: model.isBackwardable,
       isForwardable: model.isForwardable

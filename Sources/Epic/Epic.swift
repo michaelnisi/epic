@@ -13,16 +13,12 @@ public enum PlaybackState {
   case preparing, paused, playing
 }
 
-public protocol PlayerHosting {
-  func play()
-  func forward()
-  func backward()
-  func close()
-  func pause()
-}
-
 @dynamicMemberLookup
 public class Player: ObservableObject {
+  public enum Action {
+    case play, forward, backward, close, pause
+  }
+  
   public struct Item {
     public let title: String
     public let subtitle: String
@@ -42,6 +38,8 @@ public class Player: ObservableObject {
   @Published public var isForwardable: Bool
   @Published public var isBackwardable: Bool
   @Published public var trackTime: Double
+  
+  public var actionHandler: ((Action) -> Void)?
   
   public init(
     item: Item,
@@ -74,5 +72,27 @@ extension Player.Item {
 public extension Player {
   convenience init() {
     self.init(item: Item(), isPlaying: false, isForwardable: false, isBackwardable: false, trackTime: 0)
+  }
+}
+
+public extension Player {
+  func forward() {
+    actionHandler?(.forward)
+  }
+  
+  func backward() {
+    actionHandler?(.backward)
+  }
+  
+  func play() {
+    actionHandler?(.play)
+  }
+  
+  func close() {
+    actionHandler?(.close)
+  }
+  
+  func pause() {
+    actionHandler?(.pause)
   }
 }
