@@ -33,27 +33,15 @@ public class Player: ObservableObject {
     }
   }
   
-  @Published public var item: Item
-  @Published public var isPlaying: Bool
-  @Published public var isForwardable: Bool
-  @Published public var isBackwardable: Bool
-  @Published public var trackTime: Double
+  @Published public var item = Item()
+  @Published public var isPlaying = false
+  @Published public var isForwardable = false
+  @Published public var isBackwardable = false
+  @Published public var trackTime = 0.0
   
   public var actionHandler: ((Action) -> Void)?
   
-  public init(
-    item: Item,
-    isPlaying: Bool,
-    isForwardable: Bool,
-    isBackwardable: Bool,
-    trackTime: Double
-  ) {
-    self.item = item
-    self.isPlaying = isPlaying
-    self.isForwardable = isForwardable
-    self.isBackwardable = isBackwardable
-    self.trackTime = trackTime
-  }
+  public init() {}
   
   public subscript<T>(dynamicMember keyPath: KeyPath<Item, T>) -> T {
     item[keyPath: keyPath]
@@ -70,8 +58,18 @@ extension Player.Item {
 }
 
 public extension Player {
-  convenience init() {
-    self.init(item: Item(), isPlaying: false, isForwardable: false, isBackwardable: false, trackTime: 0)
+  func configure(
+    item: Item,
+    isPlaying: Bool,
+    isForwardable: Bool,
+    isBackwardable: Bool,
+    trackTime: Double
+  ) {
+    self.item = item
+    self.isPlaying = isPlaying
+    self.isForwardable = isForwardable
+    self.isBackwardable = isBackwardable
+    self.trackTime = trackTime
   }
 }
 
