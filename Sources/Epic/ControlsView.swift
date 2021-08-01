@@ -1,10 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  ControlsView.swift
-//  Epic
+// This source file is part of the Epic open source project
 //
-//  Created by Michael Nisi on 05.09.20.
-//  Copyright © 2020 Michael Nisi. All rights reserved.
+// Copyright (c) 2021 Michael Nisi and collaborators
+// Licensed under MIT License
 //
+// See https://github.com/michaelnisi/epic/blob/main/LICENSE for license information
+//
+//===----------------------------------------------------------------------===//
 
 import SwiftUI
 

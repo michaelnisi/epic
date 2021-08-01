@@ -1,16 +1,18 @@
+//===----------------------------------------------------------------------===//
 //
-//  PlayButton.swift
-//  Epic
+// This source file is part of the Epic open source project
 //
-//  Created by Michael Nisi on 13.09.20.
-//  Copyright © 2020 Michael Nisi. All rights reserved.
+// Copyright (c) 2021 Michael Nisi and collaborators
+// Licensed under MIT License
 //
+// See https://github.com/michaelnisi/epic/blob/main/LICENSE for license information
+//
+//===----------------------------------------------------------------------===//
 
 import SwiftUI
 
 struct ImageButtonStyle: ButtonStyle {
-  
-  @State var systemName: String
+  let systemName: String
 
   func makeBody(configuration: Self.Configuration) -> some View {
     Image(systemName: systemName)
@@ -21,7 +23,6 @@ struct ImageButtonStyle: ButtonStyle {
 }
 
 struct PlayButton: View {
-  
   let isPlaying: Bool
   let action: () -> Void
   
@@ -41,7 +42,6 @@ struct PlayButton: View {
 }
 
 struct PlayerButton: View {
-  
   enum Style: String {
     case airplay = "airplayaudio"
     case backward = "backward.fill"

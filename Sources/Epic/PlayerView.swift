@@ -1,10 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  PlayerView.swift
-//  Epic
+// This source file is part of the Epic open source project
 //
-//  Created by Michael Nisi on 05.09.20.
-//  Copyright © 2020 Michael Nisi. All rights reserved.
+// Copyright (c) 2021 Michael Nisi and collaborators
+// Licensed under MIT License
 //
+// See https://github.com/michaelnisi/epic/blob/main/LICENSE for license information
+//
+//===----------------------------------------------------------------------===//
 
 import SwiftUI
 import Clay
@@ -56,7 +59,10 @@ extension PlayerView {
         .edgesIgnoringSafeArea(.all)
         .animation(.default)
       VStack {
-        closeButton
+        CloseBarButton {
+          model.close()
+        }
+        .foregroundColor(.secondary)
         VStack(spacing: 24) {
           hero
           titles 
@@ -78,26 +84,6 @@ extension PlayerView {
 extension PlayerView {
   var background: Color {
     colorScheme == .dark ? model.colors.dark : model.colors.light
-  }
-}
-
-// MARK: - Close Button
-
-extension PlayerView {
-  private var closeTap: some Gesture {
-    TapGesture()
-      .onEnded { _ in
-        model.close()
-      }
-  }
-  
-  private var closeButton: some View {
-    Group {
-      CloseBarButton()
-        .gesture(closeTap)
-        .foregroundColor(secondaryColor)
-    }
-    .frame(minHeight: 60)
   }
 }
 
