@@ -12,46 +12,36 @@
 import SwiftUI
 
 struct ControlsView: View {
-  
-  let play: () -> Void
-  let pause: () -> Void
-  let forward: () -> Void
-  let backward: () -> Void
-  
-  let isPlaying: Bool
-  let isBackwardable: Bool
-  let isForwardable: Bool
-  
-  @Environment(\.colors) var colors: Colors
+  @ObservedObject var model: Player
   
   private func pauseOrPlay() {
-    isPlaying ? pause() : play()
+    model.isPlaying ? model.pause() : model.play()
   }
   
   private var forwardColor: Color {
-    isForwardable ? .primary : colors.base
+    model.isForwardable ? .primary : model.colors.base
   }
   
   private var backwardColor: Color {
-    isBackwardable ? .primary : colors.base
+    model.isBackwardable ? .primary : model.colors.base
   }
   
   var body: some View {
       HStack(spacing: 32) {
-        PlayerButton(action: forward, style: .gobackward15)
+        PlayerButton(action: model.forward, style: .gobackward15)
           .frame(width: 24, height: 24 )
-        PlayerButton(action: backward, style: .backward)
+        PlayerButton(action: model.backward, style: .backward)
           .frame(width: 48, height: 48)
-          .disabled(!isBackwardable)
+          .disabled(!model.isBackwardable)
           .foregroundColor(backwardColor)
-        PlayButton(isPlaying: isPlaying, action: pauseOrPlay)
+        PlayButton(isPlaying: model.isPlaying, action: pauseOrPlay)
           .frame(width: 48, height: 48)
           .foregroundColor(.primary)
-        PlayerButton(action: forward, style: .forward)
+        PlayerButton(action: model.forward, style: .forward)
           .frame(width: 48, height: 64)
-          .disabled(!isForwardable)
+          .disabled(!model.isForwardable)
           .foregroundColor(forwardColor)
-        PlayerButton(action: forward, style: .goforward15)
+        PlayerButton(action: model.forward, style: .goforward15)
           .frame(width: 24, height: 24 )
       }
   }

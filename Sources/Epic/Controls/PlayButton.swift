@@ -64,5 +64,3 @@ struct PlayerButton: View {
       .buttonStyle(ImageButtonStyle(systemName: style.rawValue))
   }
 }
-
-

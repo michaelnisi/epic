@@ -66,7 +66,7 @@ extension PlayerView {
         VStack(spacing: 24) {
           hero
           titles 
-          track
+          TrackView(model: model, textColor: background)
           controls
           actions
         }
@@ -147,66 +147,14 @@ extension PlayerView {
   }
 }
 
-// MARK: - Track
-
-extension PlayerView {
-  private var barLeft: Color {
-    colorScheme == .dark ? model.colors.base : model.colors.dark
-  }
-  
-  private var barRight: Color {
-    colorScheme == .dark ? model.colors.light : model.colors.base
-  }
-  
-  private var track: some View {
-    Clay.Slider(
-      value: $model.trackTime,
-      range: (0, 100),
-      knobWidth: 0
-    ) { modifiers, value in
-        ZStack {
-          ZStack {
-            barLeft
-              .modifier(modifiers.barLeft)
-            barRight
-              .modifier(modifiers.barRight)
-            HStack {
-              Text(("\(value)"))
-                .font(.body)
-                .padding(.leading)
-                .foregroundColor(.white)
-              Spacer()
-              Text(("100"))
-                .font(.body)
-                .padding(.trailing)
-                .foregroundColor(background)
-            }
-          }
-          .cornerRadius(.zero)
-        }
-        .cornerRadius(15)
-      }
-    .frame(height: 30)
-  }
-}
-
 // MARK: - Controls and Actions
 
 extension PlayerView {
   private func nop() {}
   
   private var controls: some View {
-    ControlsView(
-      play: model.play,
-      pause: model.pause,
-      forward: model.forward,
-      backward: model.backward,
-      isPlaying: model.isPlaying,
-      isBackwardable: model.isBackwardable,
-      isForwardable: model.isForwardable
-    )
-    .foregroundColor(secondaryColor)
-    .environment(\.colors, model.colors)
+    ControlsView(model: model)
+      .foregroundColor(secondaryColor)
   }
   
   private var actions: some View {

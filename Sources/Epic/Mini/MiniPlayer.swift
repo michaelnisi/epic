@@ -12,7 +12,6 @@
 import Foundation
 import UIKit
 
-/// MiniPlayer models presentation of the mini player. After this iteration, move into the Epic (player) package.
 public class MiniPlayer {
   public enum Action {
     case play, pause, showPlayer
