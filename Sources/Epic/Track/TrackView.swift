@@ -14,23 +14,28 @@ import Clay
 
 struct TrackView: View {
   @Environment(\.colorScheme) private var colorScheme: ColorScheme
-  @ObservedObject var model: Player
+  
+  let colors: Colors
+  @ObservedObject var track: Track
   
   private var barLeft: Color {
-    colorScheme == .dark ? model.colors.base : model.colors.dark
+    colorScheme == .dark ? colors.base : colors.dark
   }
   
   private var barRight: Color {
-    colorScheme == .dark ? model.colors.light : model.colors.base
+    colorScheme == .dark ? colors.light : colors.base
   }
   
   let textColor: Color
   
   var body: some View {
     Clay.Slider(
-      value: $model.trackTime,
-      range: (0, 100),
-      knobWidth: 0
+      value: $track.time,
+      range: (0, track.duration),
+      knobWidth: 0,
+      onDragChange: { time in
+        track.dragTime = time
+      }
     ) { modifiers, value in
       ZStack {
         ZStack {
@@ -39,13 +44,13 @@ struct TrackView: View {
           barRight
             .modifier(modifiers.barRight)
           HStack {
-            Text(("\(value)"))
-              .font(.body)
+            Text(track.time.durationString)
+              .font(.system(.body, design: .monospaced))
               .padding(.leading)
               .foregroundColor(.white)
             Spacer()
-            Text(("100"))
-              .font(.body)
+            Text(track.duration.durationString)
+              .font(.system(.body, design: .monospaced))
               .padding(.trailing)
               .foregroundColor(textColor)
           }

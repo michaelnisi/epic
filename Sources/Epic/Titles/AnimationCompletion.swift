@@ -12,9 +12,7 @@
 import SwiftUI
 
 /// Antoine van der Lee, https://www.avanderlee.com/swiftui/withanimation-completion-callback/
-struct AnimationCompletion<Value>:
-  AnimatableModifier where Value: VectorArithmetic {
-  
+struct AnimationCompletion<Value>: AnimatableModifier where Value: VectorArithmetic {
   var animatableData: Value {
     didSet {
       notifyCompletionIfFinished()
@@ -28,7 +26,6 @@ struct AnimationCompletion<Value>:
     self.completion = completion
     self.animatableData = observedValue
     targetValue = observedValue
-
   }
 
   private func notifyCompletionIfFinished() {
@@ -47,7 +44,6 @@ struct AnimationCompletion<Value>:
 }
 
 extension View {
-
     func onAnimationComplete<Value: VectorArithmetic>(
       for value: Value,
       completion: @escaping () -> Void
@@ -55,5 +51,3 @@ extension View {
       modifier(AnimationCompletion(observedValue: value, completion: completion))
     }
 }
-
-

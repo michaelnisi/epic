@@ -66,7 +66,7 @@ extension PlayerView {
         VStack(spacing: 24) {
           hero
           titles 
-          TrackView(model: model, textColor: background)
+          TrackView(colors: model.colors, track: model.track, textColor: background)
           controls
           actions
         }

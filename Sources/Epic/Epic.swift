@@ -15,84 +15,17 @@ public enum PlaybackState {
   case preparing, paused, playing
 }
 
-@dynamicMemberLookup
-public class Player: ObservableObject {
-  public enum Action {
-    case play, forward, backward, close, pause
-  }
-  
-  public struct Item {
-    public let title: String
-    public let subtitle: String
-    public let colors: Colors
-    public let image: Image
+extension Double {
+  static let durationFormatter: DateComponentsFormatter = {
+    let formatter = DateComponentsFormatter()
+    formatter.unitsStyle = .positional
+    formatter.allowedUnits = [.minute, .second]
+    formatter.zeroFormattingBehavior = [.pad]
     
-    public init(title: String, subtitle: String, colors: Colors, image: Image) {
-      self.title = title
-      self.subtitle = subtitle
-      self.colors = colors
-      self.image = image
-    }
-  }
+    return formatter
+  }()
   
-  @Published public var item = Item()
-  @Published public var isPlaying = false
-  @Published public var isForwardable = false
-  @Published public var isBackwardable = false
-  @Published public var trackTime = 0.0
-  
-  public var actionHandler: ((Action) -> Void)?
-  
-  public init() {}
-  
-  public subscript<T>(dynamicMember keyPath: KeyPath<Item, T>) -> T {
-    item[keyPath: keyPath]
-  }
-}
-
-extension Player.Item {
-  init() {
-    title = ""
-    subtitle = ""
-    colors = Colors(base: .red, dark: .green, light: .blue)
-    image = Image("Oval")
-  }
-}
-
-public extension Player {
-  func configure(
-    item: Item,
-    isPlaying: Bool,
-    isForwardable: Bool,
-    isBackwardable: Bool,
-    trackTime: Double
-  ) {
-    self.item = item
-    self.isPlaying = isPlaying
-    self.isForwardable = isForwardable
-    self.isBackwardable = isBackwardable
-    self.trackTime = trackTime
-  }
-}
-
-public extension Player {
-  func forward() {
-    actionHandler?(.forward)
-  }
-  
-  func backward() {
-    actionHandler?(.backward)
-  }
-  
-  func play() {
-    actionHandler?(.play)
-  }
-  
-  func close() {
-    actionHandler?(.close)
-  }
-  
-  func pause() {
-    actionHandler?(.pause)
+  var durationString: String {
+    Double.durationFormatter.string(from: self) ?? "00:00"
   }
 }
