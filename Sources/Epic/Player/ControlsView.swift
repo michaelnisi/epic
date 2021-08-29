@@ -28,7 +28,7 @@ struct ControlsView: View {
   
   var body: some View {
       HStack(spacing: 32) {
-        PlayerButton(action: model.forward, style: .gobackward15)
+        PlayerButton(action: model.skipBackward, style: .gobackward15)
           .frame(width: 24, height: 24 )
         PlayerButton(action: model.backward, style: .backward)
           .frame(width: 48, height: 48)
@@ -41,8 +41,8 @@ struct ControlsView: View {
           .frame(width: 48, height: 64)
           .disabled(!model.isForwardable)
           .foregroundColor(forwardColor)
-        PlayerButton(action: model.forward, style: .goforward15)
-          .frame(width: 24, height: 24 )
+        PlayerButton(action: model.skipForward, style: .goforward15)
+          .frame(width: 24, height: 24)
       }
   }
 }

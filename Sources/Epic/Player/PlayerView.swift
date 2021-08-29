@@ -141,6 +141,9 @@ extension PlayerView {
         .font(.subheadline)
         .lineLimit(1)
     }
+    .onTapGesture {
+      model.more()
+    }
     .onChange(of: model.title) { string in
       title.string = string
     }

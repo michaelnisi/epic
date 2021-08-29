@@ -11,13 +11,19 @@
 
 import SwiftUI
 import Combine
-import CoreMIDI
-import simd
 
 @dynamicMemberLookup
 public class Player: ObservableObject {
   public enum Action {
-    case play, forward, backward, close, pause, scrub(Double)
+    case play
+    case forward
+    case backward
+    case close
+    case pause
+    case scrub(TimeInterval)
+    case skipForward
+    case skipBackward
+    case more
   }
   
   public struct Item {
@@ -46,7 +52,7 @@ public class Player: ObservableObject {
     track = Track()
     track.$dragTime
       .sink { [unowned self] time in
-        self.scrub(time: time)
+        self.scrub(time)
       }
       .store(in: &subscriptons)
   }
@@ -104,7 +110,19 @@ public extension Player {
     actionHandler?(.pause)
   }
   
-  func scrub(time: Double) {
+  func scrub(_ time: TimeInterval) {
     actionHandler?(.scrub(time))
+  }
+  
+  func skipForward() {
+    actionHandler?(.skipForward)
+  }
+          
+  func skipBackward() {
+    actionHandler?(.skipBackward)
+  }
+  
+  func more() {
+    actionHandler?(.more)
   }
 }
