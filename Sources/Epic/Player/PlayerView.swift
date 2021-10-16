@@ -14,7 +14,7 @@ import Clay
 
 public struct PlayerView: View {
   @ObservedObject public private (set) var model: Player
-  private let airPlayButton: AnyView
+  private let actionsView: AnyView
   
   @Environment(\.colorScheme) private var colorScheme: ColorScheme
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
@@ -22,9 +22,9 @@ public struct PlayerView: View {
   @StateObject private var title = MarqueeText.Model(string: "", width: .zero)
   @State private var imageConfiguration: (CGFloat, CGFloat) = (40, 12)
   
-  public init(model: Player, airPlayButton: AnyView) {
+  public init(model: Player, actionsView: AnyView) {
     self.model = model
-    self.airPlayButton = airPlayButton
+    self.actionsView = actionsView
   }
   
   private var secondaryColor: Color {
@@ -59,16 +59,15 @@ extension PlayerView {
         .edgesIgnoringSafeArea(.all)
         .animation(.default)
       VStack {
-        CloseBarButton {
+        CloseBarButton(colors: model.colors) {
           model.close()
         }
-        .foregroundColor(.secondary)
         VStack(spacing: 24) {
           hero
           titles 
           TrackView(colors: model.colors, track: model.track, textColor: background)
           controls
-          actions
+          actions.frame(maxWidth: 208, maxHeight: 48)
         }
         .padding(innerPadding)
         .foregroundColor(Color.primary)
@@ -161,16 +160,8 @@ extension PlayerView {
   }
   
   private var actions: some View {
-    HStack(spacing: 48) {
-      PlayerButton(action: nop, style: .moon)
-        .frame(width: 20, height: 20)
-      airPlayButton
-        .frame(width: 48, height: 48)
-        .environment(\.colors, model.colors)
-      PlayerButton(action: nop, style: .speaker)
-        .frame(width: 20, height: 20)
-    }
-    .foregroundColor(secondaryColor)
+    actionsView
+      .environment(\.colors, model.colors)
   }
 }
 

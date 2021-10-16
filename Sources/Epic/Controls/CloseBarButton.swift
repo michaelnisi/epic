@@ -12,6 +12,12 @@
 import SwiftUI
 
 struct CloseBarButton: View {
+  let colors: Colors
+  
+  private var color: Color {
+    colors.base
+  }
+  
   var action: () -> Void
   
   var body: some View {
@@ -21,6 +27,7 @@ struct CloseBarButton: View {
       Rectangle()
         .frame(width: 96, height: 6)
         .cornerRadius(3)
+        .foregroundColor(color)
     }
     .frame(minHeight: 60)
   }
