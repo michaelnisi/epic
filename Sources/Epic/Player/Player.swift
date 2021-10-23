@@ -64,10 +64,10 @@ public class Player: ObservableObject {
 
 extension Player.Item {
   init() {
-    title = ""
-    subtitle = ""
+    title = "Untitled"
+    subtitle = "Hello"
     colors = Colors(base: .red, dark: .green, light: .blue)
-    image = Image("Oval")
+    image = Image(systemName: "radio.fill")
   }
 }
 

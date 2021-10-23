@@ -27,22 +27,44 @@ struct ControlsView: View {
   }
   
   var body: some View {
-      HStack(spacing: 32) {
+    HStack {
+      Group {
         PlayerButton(action: model.skipBackward, style: .gobackward15)
           .frame(width: 24, height: 24 )
+      }.frame(maxWidth: .infinity)
+
+        Group {
         PlayerButton(action: model.backward, style: .backward)
           .frame(width: 48, height: 48)
           .disabled(!model.isBackwardable)
           .foregroundColor(backwardColor)
+        }.frame(maxWidth: .infinity)
+
+      Group {
         PlayButton(isPlaying: model.isPlaying, action: pauseOrPlay)
           .frame(width: 48, height: 48)
           .foregroundColor(.primary)
+      }.frame(maxWidth: .infinity)
+          Group {
         PlayerButton(action: model.forward, style: .forward)
           .frame(width: 48, height: 64)
           .disabled(!model.isForwardable)
           .foregroundColor(forwardColor)
+          }.frame(maxWidth: .infinity)
+
+            Group {
         PlayerButton(action: model.skipForward, style: .goforward15)
           .frame(width: 24, height: 24)
+            }.frame(maxWidth: .infinity)
+
       }
+    .frame(maxWidth: .infinity)
+  }
+}
+struct ControlsViewPreview: PreviewProvider {
+  static var previews: some View {
+    Group {
+      ControlsView(model: .init())
+    }
   }
 }
