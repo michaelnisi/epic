@@ -38,7 +38,7 @@ struct HeroView: View {
             configure(for: isPlaying)
           }
         }
-        .onPreferenceChange(SizePrefKey.self) { size in
+        .onAppear {
           configure(for: model.isPlaying)
         }
     }
