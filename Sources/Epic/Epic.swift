@@ -26,6 +26,10 @@ extension Double {
   }()
   
   var durationString: String {
-    Double.durationFormatter.string(from: self) ?? "00:00"
+    guard isFinite && !isNaN else {
+      return "00:00"
+    }
+    
+    return Double.durationFormatter.string(from: self) ?? "00:00"
   }
 }
