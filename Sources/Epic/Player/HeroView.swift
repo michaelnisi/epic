@@ -35,8 +35,11 @@ struct HeroView: View {
         })
         .onChange(of: model.isPlaying) { isPlaying in
           withAnimation(imageAnimation) {
-            configure(matching: isPlaying)
+            configure(for: isPlaying)
           }
+        }
+        .onPreferenceChange(SizePrefKey.self) { size in
+          configure(for: model.isPlaying)
         }
     }
   }
@@ -55,7 +58,7 @@ private extension HeroView {
     .interpolatingSpring(mass: 1, stiffness: 250, damping: 15, initialVelocity: -5)
   }
   
-  func configure(matching isPlaying: Bool) {
+  func configure(for isPlaying: Bool) {
     conf = .init(
       padding: (isPlaying ? 8 : 40) * paddingMultiplier,
       shadowRadius: (isPlaying ? 32 : 12) * paddingMultiplier
