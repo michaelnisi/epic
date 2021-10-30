@@ -12,36 +12,69 @@
 import SwiftUI
 
 public struct Colors {
-  public let base: Color
-  public let dark: Color
-  public let light: Color
+  private let base: UIColor
   
-  public init(base: Color, dark: Color, light: Color) {
+  public init(base: UIColor) {
     self.base = base
-    self.dark = dark
-    self.light = light
   }
 }
 
 public extension Colors {
   init(image: UIImage) {
-    let base = image.averageColor
-    
-    self.init(
-      base: Color(base),
-      dark: Color(base.darker(0.3)),
-      light: Color(base.lighter(0.3))
-    )
+    let color = image.averageColor
+    base = color.isBlack ? .init(white: 0.4, alpha: 1) : image.averageColor
+  }
+}
+
+public extension Colors {
+  func background(matching scheme: ColorScheme) -> Color {
+    switch scheme {
+    case .light:
+      return Color(base.lighter(0.3))
+    case .dark:
+      return Color(base.darker(0.3))
+    }
+  }
+  
+  func secondary(matching scheme: ColorScheme) -> Color {
+    switch scheme {
+    case .light:
+      return Color(base)
+    case .dark:
+      return Color(base)
+    }
+  }
+  
+  func primary(matching scheme: ColorScheme) -> Color {
+    switch scheme {
+    case .light:
+      return Color(base.darker(0.3))
+    case .dark:
+      return Color(base.lighter(0.3))
+    }
   }
 }
 
 struct ColorsKey: EnvironmentKey {
-  static var defaultValue = Colors(base: .gray, dark: .black, light: .white)
+  static var defaultValue = Colors(base: .gray)
 }
 
 public extension EnvironmentValues {
   var colors: Colors {
     get { self[ColorsKey.self] }
     set { self[ColorsKey.self] = newValue }
+  }
+}
+
+private extension UIColor {
+  var isBlack: Bool {
+    let white = UnsafeMutablePointer<CGFloat>.allocate(capacity: 1)
+    
+    defer {
+      white.deallocate()
+    }
+    getWhite(white, alpha: nil)
+    
+    return white.pointee < 0.2
   }
 }

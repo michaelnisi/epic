@@ -16,6 +16,7 @@ public struct PlayerView: View {
   @ObservedObject public private (set) var model: Player
   private let actionsView: AnyView
   @Environment(\.colorScheme) private var colorScheme: ColorScheme
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
   @StateObject private var title = MarqueeText.Model(string: "", width: .zero)
   
   public init(model: Player, actionsView: AnyView) {
@@ -30,15 +31,16 @@ public struct PlayerView: View {
 
 private extension PlayerView {
   var secondaryColor: Color {
-    colorScheme == .dark ? model.colors.light : model.colors.dark
+    model.colors.secondary(matching: colorScheme)
   }
   
-  var outerPadding: EdgeInsets {
-    .init(top: 0, leading: 20, bottom: 40, trailing: 20)
-  }
-  
-  var innerPadding: EdgeInsets {
-    .init(top: 0, leading: 12, bottom: 12, trailing: 12)
+  var heroPadding: EdgeInsets {
+    EdgeInsets(
+      top: 30,
+      leading: horizontalSizeClass == .compact ? 20 : 40,
+      bottom: 30,
+      trailing: horizontalSizeClass == .compact ? 20 : 40
+    )
   }
 }
 
@@ -51,7 +53,7 @@ private extension PlayerView {
       
       VStack {
         HeroView(model: model)
-          .padding(30)
+          .padding(heroPadding)
           .frame(maxWidth: 640)
           .onPreferenceChange(SizePrefKey.self) { size in
             title.string = model.title
@@ -65,11 +67,12 @@ private extension PlayerView {
             .frame(maxWidth: 600)
           controls
             .frame(maxWidth: 320)
-          actions
-            .frame(maxWidth: 208, maxHeight: 48)
-            .padding(.bottom, 30)
+
         }
         .layoutPriority(1)
+        Spacer()
+        actions
+          .frame(maxWidth: 208, maxHeight: 48)
         Spacer()
       }
       .padding(12)
@@ -86,7 +89,7 @@ private extension PlayerView {
 
 private extension PlayerView {
   var background: Color {
-    colorScheme == .dark ? model.colors.dark : model.colors.light
+    model.colors.background(matching: colorScheme)
   }
 }
 

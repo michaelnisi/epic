@@ -19,11 +19,11 @@ struct TrackView: View {
   @ObservedObject var track: Track
   
   private var barLeft: Color {
-    colorScheme == .dark ? colors.base : colors.dark
+    colors.primary(matching: colorScheme)
   }
   
   private var barRight: Color {
-    colorScheme == .dark ? colors.light : colors.base
+    colors.secondary(matching: colorScheme)
   }
   
   let textColor: Color
@@ -47,7 +47,7 @@ struct TrackView: View {
             Text(track.time.durationString)
               .font(.system(.body, design: .monospaced))
               .padding(.leading)
-              .foregroundColor(.white)
+              .foregroundColor(textColor)
             Spacer()
             Text(track.duration.durationString)
               .font(.system(.body, design: .monospaced))

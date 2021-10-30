@@ -12,12 +12,9 @@
 import SwiftUI
 
 struct CloseBarButton: View {
+  @Environment(\.colorScheme) private var colorScheme: ColorScheme
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
   let colors: Colors
-  
-  private var color: Color {
-    colors.base
-  }
   
   var action: () -> Void
   
@@ -29,8 +26,18 @@ struct CloseBarButton: View {
         .frame(width: 96, height: 6)
         .cornerRadius(3)
         .foregroundColor(color)
-        .offset(y: horizontalSizeClass == .compact ? 0 : 15)
+        .offset(y: offset)
     }
     .frame(height: 40)
+  }
+}
+
+private extension CloseBarButton {
+  var color: Color {
+    colors.secondary(matching: colorScheme)
+  }
+  
+  var offset: CGFloat {
+    horizontalSizeClass == .compact ? -10 : 10
   }
 }

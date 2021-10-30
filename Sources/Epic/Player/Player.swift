@@ -66,7 +66,7 @@ extension Player.Item {
   init() {
     title = "Untitled"
     subtitle = "Hello"
-    colors = Colors(base: .red, dark: .green, light: .blue)
+    colors = Colors(base: .red)
     image = Image(systemName: "radio.fill")
   }
 }

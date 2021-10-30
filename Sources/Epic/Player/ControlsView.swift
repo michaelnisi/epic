@@ -13,17 +13,18 @@ import SwiftUI
 
 struct ControlsView: View {
   @ObservedObject var model: Player
+  @Environment(\.colorScheme) private var colorScheme: ColorScheme
   
   private func pauseOrPlay() {
     model.isPlaying ? model.pause() : model.play()
   }
   
   private var forwardColor: Color {
-    model.isForwardable ? .primary : model.colors.base
+    model.isForwardable ? .primary : model.colors.secondary(matching: colorScheme)
   }
   
   private var backwardColor: Color {
-    model.isBackwardable ? .primary : model.colors.base
+    model.isBackwardable ? .primary : model.colors.secondary(matching: colorScheme)
   }
   
   var body: some View {
@@ -31,36 +32,42 @@ struct ControlsView: View {
       Group {
         PlayerButton(action: model.skipBackward, style: .gobackward15)
           .frame(width: 24, height: 24 )
-      }.frame(maxWidth: .infinity)
-
-        Group {
+      }
+      .frame(maxWidth: .infinity)
+      
+      Group {
         PlayerButton(action: model.backward, style: .backward)
           .frame(width: 48, height: 48)
           .disabled(!model.isBackwardable)
           .foregroundColor(backwardColor)
-        }.frame(maxWidth: .infinity)
-
+      }
+      .frame(maxWidth: .infinity)
+      
       Group {
         PlayButton(isPlaying: model.isPlaying, action: pauseOrPlay)
           .frame(width: 48, height: 48)
           .foregroundColor(.primary)
-      }.frame(maxWidth: .infinity)
-          Group {
+      }
+      .frame(maxWidth: .infinity)
+      
+      Group {
         PlayerButton(action: model.forward, style: .forward)
           .frame(width: 48, height: 64)
           .disabled(!model.isForwardable)
           .foregroundColor(forwardColor)
-          }.frame(maxWidth: .infinity)
-
-            Group {
+      }
+      .frame(maxWidth: .infinity)
+      
+      Group {
         PlayerButton(action: model.skipForward, style: .goforward15)
           .frame(width: 24, height: 24)
-            }.frame(maxWidth: .infinity)
-
       }
+      .frame(maxWidth: .infinity)
+    }
     .frame(maxWidth: .infinity)
   }
 }
+
 struct ControlsViewPreview: PreviewProvider {
   static var previews: some View {
     Group {
