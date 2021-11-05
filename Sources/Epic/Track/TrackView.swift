@@ -45,12 +45,12 @@ struct TrackView: View {
             .modifier(modifiers.barRight)
           HStack {
             Text(track.time.durationString)
-              .font(.system(.body, design: .monospaced))
+              .font(.system(.subheadline, design: .monospaced))
               .padding(.leading)
               .foregroundColor(textColor)
             Spacer()
             Text(track.duration.durationString)
-              .font(.system(.body, design: .monospaced))
+              .font(.system(.subheadline, design: .monospaced))
               .padding(.trailing)
               .foregroundColor(textColor)
           }

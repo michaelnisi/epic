@@ -70,12 +70,13 @@ private extension PlayerView {
 
         }
         .layoutPriority(1)
-        Spacer()
+        Spacer(minLength: 30)
         actions
           .frame(maxWidth: 208, maxHeight: 48)
         Spacer()
       }
       .padding(12)
+      .padding(.bottom, 24)
       .foregroundColor(.primary)
       
       CloseBarButton(colors: model.colors) {

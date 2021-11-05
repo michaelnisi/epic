@@ -31,7 +31,8 @@ struct ControlsView: View {
     HStack {
       Group {
         PlayerButton(action: model.skipBackward, style: .gobackward15)
-          .frame(width: 24, height: 24 )
+          .frame(width: 24, height: 24)
+          .foregroundColor(model.colors.primary(matching: colorScheme))
       }
       .frame(maxWidth: .infinity)
       
@@ -61,6 +62,7 @@ struct ControlsView: View {
       Group {
         PlayerButton(action: model.skipForward, style: .goforward15)
           .frame(width: 24, height: 24)
+          .foregroundColor(model.colors.primary(matching: colorScheme))
       }
       .frame(maxWidth: .infinity)
     }

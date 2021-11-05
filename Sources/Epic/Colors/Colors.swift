@@ -33,6 +33,8 @@ public extension Colors {
       return Color(base.lighter(0.3))
     case .dark:
       return Color(base.darker(0.3))
+    @unknown default:
+      return Color(base.lighter(0.3))
     }
   }
   
@@ -41,6 +43,8 @@ public extension Colors {
     case .light:
       return Color(base)
     case .dark:
+      return Color(base)
+    @unknown default:
       return Color(base)
     }
   }
@@ -51,6 +55,8 @@ public extension Colors {
       return Color(base.darker(0.3))
     case .dark:
       return Color(base.lighter(0.3))
+    @unknown default:
+      return Color(base.darker(0.3))
     }
   }
 }
