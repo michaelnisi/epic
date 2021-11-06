@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Clay",
+        "repositoryURL": "https://github.com/michaelnisi/clay",
+        "state": {
+          "branch": null,
+          "revision": "e4c5800275ee3950551d9018b00830042d2cb5a5",
+          "version": "2.1.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
