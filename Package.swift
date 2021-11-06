@@ -23,7 +23,7 @@ let package = Package(
       targets: ["Epic"]),
   ],
   dependencies: [
-    .package(name: "Clay", url: "https://github.com/michaelnisi/clay", from: "1.0.0")
+    .package(name: "Clay", url: "https://github.com/michaelnisi/clay", from: "2.1.0")
   ],
   targets: [
     .target(
