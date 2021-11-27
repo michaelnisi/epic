@@ -17,15 +17,11 @@ public struct PlayerView: View {
   private let actionsView: AnyView
   @Environment(\.colorScheme) private var colorScheme: ColorScheme
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
-  @StateObject private var title = MarqueeText.Model(string: "", width: .zero)
+  @StateObject private var title: MarqueeText.Model = .init(string: "", width: .zero)
   
   public init(model: Player, actionsView: AnyView) {
     self.model = model
     self.actionsView = actionsView
-  }
-  
-  public var body: some View {
-    root
   }
 }
 
@@ -44,8 +40,8 @@ private extension PlayerView {
   }
 }
 
-private extension PlayerView {
-  var root: some View {
+public extension PlayerView {
+  var body: some View  {
     ZStack(alignment: .top) {
       background
         .edgesIgnoringSafeArea(.all)
@@ -77,6 +73,7 @@ private extension PlayerView {
       }
       .padding(12)
       .padding(.bottom, 24)
+      .ignoresSafeArea(.keyboard)
       .foregroundColor(.primary)
       
       CloseBarButton(colors: model.colors) {

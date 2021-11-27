@@ -26,7 +26,7 @@ struct CloseBarButton: View {
         .frame(width: 96, height: 6)
         .cornerRadius(3)
         .foregroundColor(color)
-        .offset(y: offset)
+        .offset(y: 10)
     }
     .frame(height: 40)
   }
@@ -35,9 +35,5 @@ struct CloseBarButton: View {
 private extension CloseBarButton {
   var color: Color {
     colors.secondary(matching: colorScheme)
-  }
-  
-  var offset: CGFloat {
-    horizontalSizeClass == .compact ? -10 : 10
   }
 }
